@@ -1,0 +1,26 @@
+[application]
+name = "web"
+
+# The dx CLI runs Tailwind for us (it downloads the standalone tailwindcss
+# binary): `tailwind.css` is the v4 input, `assets/tailwind.css` the output
+# that `asset!("/assets/tailwind.css")` bundles. No Node/npm required.
+tailwind_input = "tailwind.css"
+tailwind_output = "assets/tailwind.css"
+
+[web.app]
+title = "Web App"
+
+[web.watcher]
+reload_html = true
+watch_path = ["src", "assets", "tailwind.css"]
+# Client-side routing: the dev server answers unknown paths with index.html
+# (the local stand-in for the static site's SPA fallback rewrite).
+index_on_404 = true
+
+# Dev proxy: forward API calls to the axum server (apps/api, PORT=8080) — the
+# local stand-in for the Render static site's `/api/*` rewrite.
+[[web.proxy]]
+backend = "http://localhost:8080/api"
+
+[[web.proxy]]
+backend = "http://localhost:8080/health"

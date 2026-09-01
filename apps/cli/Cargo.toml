@@ -1,0 +1,23 @@
+[package]
+name = "cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Command-line tool built with clap"
+publish = false
+
+[[bin]]
+name = "cli"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+dotenvy.workspace = true
+openai-summarizer.workspace = true
+tokio.workspace = true
+
+[lints]
+workspace = true

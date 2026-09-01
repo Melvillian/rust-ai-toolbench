@@ -1,0 +1,20 @@
+# Root "scripts" — the Rust analogue of the TS repo's root package.json scripts.
+# Pure cargo commands are aliases; multi-process orchestration lives in xtask/.
+[alias]
+xtask = "run --quiet --package xtask --"
+
+# correctness gates (every workspace member is covered — cargo cannot skip one)
+typecheck = "check --workspace --all-targets"
+lint-check = "xtask lint-check"
+lint = "xtask lint"
+
+# full-stack dev / prod flows
+dev = "xtask dev"
+dev-api = "xtask dev-api"
+dev-web = "xtask dev-web"
+dev-cli = "xtask dev-cli"
+start = "xtask start"
+preview = "xtask preview"
+build-all = "xtask build"
+docker-build-api = "xtask docker-build-api"
+docker-start-api = "xtask docker-start-api"

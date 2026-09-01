@@ -1,0 +1,11 @@
+# Build context is the repo root (COPY . .), so this root .dockerignore governs.
+target
+**/target
+dist
+**/dist
+.git
+.env
+**/.env
+.vscode
+coverage
+.dioxus

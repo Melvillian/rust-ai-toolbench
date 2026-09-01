@@ -1,0 +1,76 @@
+[workspace]
+resolver = "3"
+members = [
+  "apps/api",
+  "apps/cli",
+  "apps/web",
+  "packages/common-lib",
+  "packages/claude-api",
+  "packages/openai-summarizer",
+  "generators",
+  "xtask",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+rust-version = "1.90"
+repository = "https://github.com/Melvillian/rust-ai-toolbench"
+
+[workspace.dependencies]
+# workspace crates
+common-lib = { path = "packages/common-lib", default-features = false }
+claude-api = { path = "packages/claude-api" }
+openai-summarizer = { path = "packages/openai-summarizer" }
+
+# async / http
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "process", "time", "net"] }
+axum = "0.8"
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.6", features = ["fs", "trace"] }
+hyper = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+
+# serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+
+# errors / logging
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# cli / config
+clap = { version = "4", features = ["derive", "env"] }
+dotenvy = "0.15"
+chrono = { version = "0.4", features = ["serde", "clock"] }
+
+# web (Dioxus)
+dioxus = "0.7"
+dioxus-ssr = "0.7"
+
+# testing
+wiremock = "0.6"
+http-body-util = "0.1"
+tempfile = "3"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+# pedantic lints that fight idiomatic template code
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

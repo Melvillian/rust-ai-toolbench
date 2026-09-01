@@ -1,0 +1,31 @@
+[package]
+name = "xtask"
+description = "Dev orchestration: the root-script equivalents (dev, start, build, preview, docker, lint)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "xtask"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+clap.workspace = true
+reqwest.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile.workspace = true
+
+[lints]
+workspace = true

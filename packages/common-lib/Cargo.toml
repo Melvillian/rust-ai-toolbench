@@ -1,0 +1,24 @@
+[package]
+name = "common-lib"
+description = "Shared formatters, math helpers and general utilities"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[features]
+default = ["tokio"]
+# Enables the async `sleep` helper. Disable to build for wasm32-unknown-unknown.
+tokio = ["dep:tokio"]
+
+[dependencies]
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+
+[lints]
+workspace = true

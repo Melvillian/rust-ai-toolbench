@@ -1,0 +1,23 @@
+[package]
+name = "claude-api"
+description = "Thin client for the Anthropic Messages API"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+common-lib = { workspace = true, default-features = false }
+dotenvy.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
+wiremock.workspace = true
+
+[lints]
+workspace = true

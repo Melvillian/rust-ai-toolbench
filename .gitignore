@@ -1,0 +1,12 @@
+/target
+**/target
+dist
+**/dist
+.env
+**/.env
+*.log
+coverage
+.DS_Store
+claude-setup.tar.gz
+# Dioxus CLI build output
+.dioxus

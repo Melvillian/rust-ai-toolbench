@@ -1,0 +1,92 @@
+name: ci
+
+on: [pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # rust-toolchain.toml pins the channel, components, and the wasm target.
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+
+      - name: Install Dioxus CLI
+        run: cargo binstall -y --locked dioxus-cli@0.7.10
+
+      # Every workspace member, then the web app bundled for the browser
+      # (dx downloads wasm-bindgen, wasm-opt, and Tailwind itself).
+      - name: Build
+        run: cargo xtask build
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Typecheck
+        run: cargo typecheck
+
+      # The web app has browser-only code paths (gloo-net); check them too.
+      - name: Typecheck (wasm32)
+        run: cargo check -p web --target wasm32-unknown-unknown
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Test
+        run: cargo test --workspace
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: clippy, rustfmt
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      # lint-check (no --fix) so CI reports lint errors instead of silently
+      # auto-fixing them in an ephemeral runner where the fixes are never committed.
+      - name: Lint
+        run: cargo lint-check
+
+      - name: Lint (wasm32)
+        run: cargo clippy -p web --target wasm32-unknown-unknown -- -D warnings
