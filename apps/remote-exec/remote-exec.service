@@ -1,0 +1,40 @@
+# systemd *user* unit. Install:
+#   mkdir -p ~/.config/systemd/user
+#   cp apps/remote-exec/remote-exec.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload && systemctl --user enable --now remote-exec
+#   loginctl enable-linger "$USER"   # keep it running while logged out
+#
+# Enroll passkeys interactively first (stop the service, run with --enroll),
+# because the one-time link is printed to the terminal.
+
+[Unit]
+Description=remote-exec: passkey-gated allowlisted commands over Tailscale
+
+[Service]
+ExecStart=%h/.cargo/bin/remote-exec --config %h/.config/remote-exec/commands.toml
+Restart=on-failure
+RestartSec=5
+UMask=0077
+
+# Hardening. ProtectSystem=strict makes the whole filesystem read-only for this
+# service AND every command it runs, except ReadWritePaths. Add each directory
+# your commands must write (e.g. %h/src for git-pull). NoNewPrivileges also
+# means sudo/setuid helpers cannot elevate — intended.
+# (Sandboxing in *user* units needs unprivileged user namespaces; if the unit
+# fails to start with a namespace error, drop PrivateTmp/ProtectSystem.)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+# Leading "-": do not fail if the directory does not exist yet.
+ReadWritePaths=-%h/.local/state/remote-exec
+# ReadWritePaths=%h/src
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=default.target

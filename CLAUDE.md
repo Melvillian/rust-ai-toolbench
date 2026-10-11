@@ -35,6 +35,8 @@ Aliases are defined in `.cargo/config.toml`; see `xtask/CLAUDE.md` for what each
 - When using the Render MCP, always select this workspace first using `select_workspace` with id `tea-cspvkb8gph6c73ft0hd0`
 - **Service naming**: when adding a new service to `render.yaml`, name it `<repository-name>-<app-name>` (e.g. `rust-ai-toolbench-api` for `apps/api` in this repo). Render appends its own random suffix to the `.onrender.com` subdomain — do not try to include or control the suffix in `render.yaml`. Generic names like `api` produce unrecognizable domains like `api-mvqh.onrender.com`.
 
+- **Not on Render:** `apps/remote-exec` (+ `packages/command-gate`) runs on the owner's machine, loopback-bound behind `tailscale serve`. Never add it to `render.yaml`. Its security invariants are listed in `packages/command-gate/CLAUDE.md`; read them before changing auth, args or exec.
+
 ### Deploy concepts
 
 - Deploy concepts (static site vs web service decision, blueprint patterns, Rust/dx toolchain requirements, build order) live in the `render-deploys` skill.

@@ -67,8 +67,13 @@ Docker container publishes.
 apps/api               axum JSON API           packages/common-lib        formatters, math, env utils
 apps/cli               clap CLI                packages/claude-api        Anthropic Messages API client
 apps/web               Dioxus web SPA          packages/openai-summarizer OpenAI summarizer
+apps/remote-exec       passkey-gated runner    packages/command-gate      allowlist, args, exec, WebAuthn
 generators/            render-deploy scaffold  xtask/                     dev orchestration
 ```
+
+`apps/remote-exec` is the exception to the Render flow: it runs on your own
+machine behind `tailscale serve` and executes allowlisted commands there. See
+[`apps/remote-exec/README.md`](apps/remote-exec/README.md).
 
 ## Environment variables
 

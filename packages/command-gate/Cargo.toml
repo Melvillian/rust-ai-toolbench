@@ -1,0 +1,34 @@
+[package]
+name = "command-gate"
+description = "Passkey-gated, allowlisted, shell-free remote command execution (axum router + embedded UI)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+axum.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+getrandom.workspace = true
+nix.workspace = true
+sha2.workspace = true
+subtle.workspace = true
+toml.workspace = true
+webauthn-rs.workspace = true
+
+[dev-dependencies]
+http-body-util.workspace = true
+tempfile.workspace = true
+tower.workspace = true
+webauthn-authenticator-rs.workspace = true
+
+[lints]
+workspace = true

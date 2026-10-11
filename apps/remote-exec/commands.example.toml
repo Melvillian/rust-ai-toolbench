@@ -1,0 +1,111 @@
+# remote-exec config. Copy to e.g. ~/.config/remote-exec/commands.toml,
+# chmod 600, and point the binary at it with --config.
+#
+# Unknown keys are rejected and every command is validated at startup, so
+# `remote-exec --config … --check` is a safe way to test edits.
+
+[server]
+# Loopback only — enforced. `tailscale serve` is the only way in.
+bind = "127.0.0.1:8787"
+
+# Your machine's MagicDNS name (Tailscale admin → Machines, or `tailscale status`).
+# Passkeys are bound to this name: change it and you must re-enroll.
+rp_id  = "mybox.tail1234.ts.net"
+origin = "https://mybox.tail1234.ts.net"
+
+# Tailscale identities allowed through (`tailscale whois <phone-ip>` shows yours,
+# e.g. "alex@github" or "alex@example.com"). Tagged devices have no user
+# login and are therefore always refused.
+allowed_tailscale_logins = ["you@github"]
+
+# Passkeys + audit log live here (created 0700). Absolute path required.
+data_dir = "/home/you/.local/state/remote-exec"
+
+# Idle timeout for a signed-in session (60..=86400). Sessions also hard-expire after 12h.
+session_ttl_secs = 900
+
+# Server env vars passed through to commands; everything else is cleared.
+# Defaults shown. Remove DBUS/XDG entries if you don't use `systemctl --user`.
+pass_env = ["HOME", "USER", "LANG", "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS"]
+
+# ---------------------------------------------------------------------------
+# Commands. `program` must be an absolute path; `args` elements are literals
+# or exactly "{param}". There is no shell: pipes, globs, `&&`, `$VAR` do nothing.
+#
+# Param kinds:
+#   enum    values = [...]          exact match against a fixed list (safest)
+#   integer min = N, max = M        strict base-10, canonicalised
+#   word    max_len = 64 (default)  [A-Za-z0-9_][A-Za-z0-9._-]*  (no leading '-' or '.')
+#   path    root = "/abs/dir"       relative path, canonicalised, must stay under root
+#
+# DO NOT allowlist interpreters or programs that execute their arguments
+# (bash -c, sh, python, node, find -exec, xargs, env, sudo, git -c, ssh, awk,
+# sed with 'e', vim, less with !). Typed args can't save you from a program
+# whose job is to run code. If you need pipes or logic, write a script, review
+# it, `chmod 755` it (not world-writable), and allowlist the script.
+# ---------------------------------------------------------------------------
+
+[[command]]
+id = "uptime"
+description = "Load and uptime"
+program = "/usr/bin/uptime"
+
+[[command]]
+id = "disk-free"
+description = "Free space on all filesystems"
+program = "/bin/df"
+args = ["-h"]
+
+[[command]]
+id = "restart-service"
+description = "Restart one of my user services"
+program = "/usr/bin/systemctl"
+args = ["--user", "restart", "{service}"]
+timeout_secs = 60
+[[command.param]]
+name = "service"
+kind = "enum"
+values = ["nanoclaw", "notion-executor"]
+
+[[command]]
+id = "service-logs"
+description = "Recent journal lines for a user service"
+program = "/usr/bin/journalctl"
+args = ["--user", "--no-pager", "-u", "{service}", "-n", "{lines}"]
+[[command.param]]
+name = "service"
+kind = "enum"
+values = ["nanoclaw", "notion-executor"]
+[[command.param]]
+name = "lines"
+kind = "integer"
+min = 1
+max = 500
+
+[[command]]
+id = "tail-log"
+description = "Tail a file under ~/logs"
+program = "/usr/bin/tail"
+# "--" ends option parsing, belt-and-braces with path validation.
+args = ["-n", "{lines}", "--", "{file}"]
+[[command.param]]
+name = "lines"
+kind = "integer"
+min = 1
+max = 1000
+[[command.param]]
+name = "file"
+kind = "path"
+root = "/home/you/logs"
+
+[[command]]
+id = "git-pull"
+description = "Fast-forward a repo under ~/src"
+# Only for repos you control: a repo's own .git/config and hooks can run code.
+program = "/usr/bin/git"
+args = ["-C", "{repo}", "pull", "--ff-only"]
+timeout_secs = 120
+[[command.param]]
+name = "repo"
+kind = "path"
+root = "/home/you/src"

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="referrer" content="no-referrer">
+  <title>remote-exec</title>
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>remote-exec</h1>
+    <span id="who" class="muted"></span>
+    <button id="logout" class="ghost" hidden>Sign out</button>
+  </header>
+  <main>
+    <p id="status" role="status" aria-live="polite"></p>
+
+    <section id="enroll" hidden>
+      <h2>Enroll this device</h2>
+      <p class="muted">Creates a passkey for this server. The enrollment link is single-use.</p>
+      <button id="enroll-btn">Create passkey</button>
+    </section>
+
+    <section id="login" hidden>
+      <button id="login-btn">Sign in with passkey</button>
+    </section>
+
+    <section id="commands" hidden></section>
+
+    <section id="result" hidden>
+      <div class="result-head">
+        <h2 id="result-title"></h2>
+        <span id="result-meta" class="badge"></span>
+      </div>
+      <pre id="result-stdout"></pre>
+      <pre id="result-stderr" class="stderr"></pre>
+    </section>
+  </main>
+</body>
+</html>

@@ -4,9 +4,11 @@ members = [
   "apps/api",
   "apps/cli",
   "apps/web",
+  "apps/remote-exec",
   "packages/common-lib",
   "packages/claude-api",
   "packages/openai-summarizer",
+  "packages/command-gate",
   "generators",
   "xtask",
 ]
@@ -23,6 +25,7 @@ repository = "https://github.com/Melvillian/rust-ai-toolbench"
 common-lib = { path = "packages/common-lib", default-features = false }
 claude-api = { path = "packages/claude-api" }
 openai-summarizer = { path = "packages/openai-summarizer" }
+command-gate = { path = "packages/command-gate" }
 
 # async / http
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "process", "time", "net"] }
@@ -52,7 +55,17 @@ chrono = { version = "0.4", features = ["serde", "clock"] }
 dioxus = "0.7"
 dioxus-ssr = "0.7"
 
+# security (command-gate)
+webauthn-rs = "0.5"
+getrandom = "0.3"
+sha2 = "0.10"
+subtle = "2"
+toml = "0.8"
+nix = { version = "0.29", features = ["signal", "process", "user"] }
+
 # testing
+# software authenticator for end-to-end passkey tests (dev-only)
+webauthn-authenticator-rs = { version = "0.5", features = ["softpasskey"] }
 wiremock = "0.6"
 http-body-util = "0.1"
 tempfile = "3"
