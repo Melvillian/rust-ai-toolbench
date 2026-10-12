@@ -1,7 +1,6 @@
 ---
 name: setup
 description: Check prerequisites, build the repo, and verify everything works. Use when first cloning the repo or when setup seems broken.
-disable-model-invocation: true
 ---
 
 # Repository Setup
