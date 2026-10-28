@@ -11,7 +11,7 @@ CI/CD pipeline configuration for the monorepo.
 
 ## Conventions
 
-- Pin every third-party action to a full commit SHA with the version as a trailing comment (`uses: owner/repo@<sha> # v1.2.3`), never a tag or branch: tags and branches are mutable, so a compromised upstream can swap the code under them. Resolve a tag's SHA with `gh api repos/<owner>/<repo>/commits/<tag> --jq .sha`.
+- Pin every third-party action to a full commit SHA with the version as a trailing comment (`uses: owner/repo@<sha> # v1.2.3`), never a tag or branch: tags and branches are mutable, so a compromised upstream can swap the code under them. Resolve a tag's SHA with `gh api repos/<owner>/<repo>/commits/<tag> --jq .sha`. `../dependabot.yml` keeps the pins current with a weekly grouped PR (and does the same for Cargo dependencies).
 
 ## Auto-Update Instructions
 
