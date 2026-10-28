@@ -1,0 +1,59 @@
+name: audit
+
+# Nightly check of Cargo.lock against the RustSec advisory database. New
+# advisories appear without any change to this repo, so this runs on a
+# schedule rather than on pull requests.
+on:
+  schedule:
+    - cron: "0 7 * * *" # 07:00 UTC daily
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+
+      - name: Install cargo-audit
+        run: cargo binstall -y --locked cargo-audit
+
+      # Bash steps run with `-eo pipefail`, so the step fails if cargo audit does.
+      - name: Audit
+        run: cargo audit --color never 2>&1 | tee audit.txt
+
+      # On failure, open (or comment on) a single tracking issue assigned to the
+      # repo owner. GitHub emails the assignee, so the report lands in their inbox.
+      - name: Report advisories
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "\`cargo audit\` found advisories in [run ${{ github.run_id }}]($RUN_URL)."
+            echo
+            echo '```'
+            # Fall back to a placeholder if the audit never ran (e.g. install failed).
+            cat audit.txt 2>/dev/null || echo "No audit output; see the run log."
+            echo '```'
+          } > body.md
+
+          gh label create cargo-audit --color B60205 --description "RustSec advisories from the nightly audit" --force
+          existing=$(gh issue list --label cargo-audit --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file body.md
+          else
+            gh issue create --title "cargo audit: vulnerable dependencies" --label cargo-audit \
+              --assignee "${{ github.repository_owner }}" --body-file body.md
+          fi
