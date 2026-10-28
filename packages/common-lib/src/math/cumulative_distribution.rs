@@ -33,7 +33,7 @@ mod tests {
 
     #[test]
     fn empty_input_is_empty() {
-        assert!(cumulative_distribution(&[]).is_empty());
+        assert_eq!(cumulative_distribution(&[]), Vec::<f64>::new());
     }
 
     #[test]

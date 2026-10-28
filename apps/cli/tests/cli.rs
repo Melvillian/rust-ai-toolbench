@@ -54,5 +54,5 @@ fn summarize_without_api_key_fails_cleanly() {
         .output()
         .expect("run cli");
     assert!(!out.status.success());
-    assert!(!out.stderr.is_empty());
+    assert_ne!(out.stderr, Vec::<u8>::new());
 }
