@@ -73,4 +73,6 @@ missing_panics_doc = "allow"
 [profile.release]
 lto = "thin"
 codegen-units = 1
-strip = true
+# Not `true`: LLVM 23 (Rust 1.99+) strip-all drops the wasm-bindgen metadata
+# section, which breaks `dx bundle`.
+strip = "debuginfo"
