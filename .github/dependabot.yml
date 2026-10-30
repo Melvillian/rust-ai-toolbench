@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  # Workflow actions are pinned to commit SHAs (see workflows/CLAUDE.md);
+  # Dependabot bumps the SHA and its trailing `# vX.Y.Z` comment together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # The whole Cargo workspace resolves through the root Cargo.lock.
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      # Semver-compatible bumps land as one lockfile PR; major bumps
+      # stay separate since they can need code changes.
+      cargo-minor-patch:
+        update-types: [minor, patch]
